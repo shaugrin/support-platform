@@ -1,0 +1,3 @@
+spring.application.name=user
+jwt.secret: 3P3RagxBVgFD0Rz1wXNn3/MZMuRUN832bDu4IJ6OUP4=
+jwt.expiration: 86400000

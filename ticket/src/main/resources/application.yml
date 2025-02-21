@@ -1,0 +1,22 @@
+spring:
+    application:
+      name: ticket
+    datasource:
+      url: jdbc:postgresql://localhost:5432/support_db  # Replace with your DB name
+      username: postgres       # Default PostgreSQL username
+      password: postgres       # Default PostgreSQL password
+      driver-class-name: org.postgresql.Driver
+    jpa:
+      hibernate:
+        ddl-auto: create    # Auto-create/update tables
+      show-sql: true        # Optional: Show SQL in logs
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+server:
+  port: 8082

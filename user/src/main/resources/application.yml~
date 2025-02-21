@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: user
+  datasource:
+    url: jdbc:postgresql://localhost:5432/support_db  # Replace with your DB name
+    username: postgres       # Default PostgreSQL username
+    password: postgres       # Default PostgreSQL password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update    # Auto-create/update tables
+    show-sql: true        # Optional: Show SQL in logs
+  security:
+    user:
+      name: ignored # Disables default in-memory user
+
+jwt:
+  secret: gKztDNK/nTDj3JyHPdzkTUkHIaMkdmfD8/1eH3mPyEI= # Generate via: openssl rand -base64 32
+  expiration: 86400000 # 24 hours (in milliseconds)
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
