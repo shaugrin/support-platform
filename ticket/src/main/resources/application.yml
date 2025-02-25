@@ -10,6 +10,12 @@ spring:
       hibernate:
         ddl-auto: create    # Auto-create/update tables
       show-sql: true        # Optional: Show SQL in logs
+    kafka:
+      bootstrap-servers: localhost:9092
+      producer:
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 
 eureka:
   instance:

@@ -1,14 +1,18 @@
 package com.example.ticket.service;
 
+import com.example.ticket.client.NotificationClient;
 import com.example.ticket.client.UserServiceClient;
+import com.example.ticket.dto.NotificationRequest;
 import com.example.ticket.dto.TicketRequest;
 import com.example.ticket.dto.TicketResponse;
 import com.example.ticket.dto.UserResponse;
+import com.example.ticket.event.TicketAssignedEvent;
 import com.example.ticket.exception.*;
 import com.example.ticket.model.Ticket;
 import com.example.ticket.model.TicketStatus;
 import com.example.ticket.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +23,8 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final UserServiceClient userServiceClient;
+    private final NotificationClient notificationClient;
+    private final KafkaTemplate<String, TicketAssignedEvent> kafkaTemplate;
 
     public TicketResponse createTicket(TicketRequest ticketRequest) {
         // Validate that the creator (customer) exists
@@ -52,8 +58,22 @@ public class TicketService {
         ticket.setStatus(TicketStatus.IN_PROGRESS);
         Ticket updatedTicket = ticketRepository.save(ticket);
 
+        // Send Kafka event
+        TicketAssignedEvent event = new TicketAssignedEvent();
+        event.setTicketId(ticketId);
+        event.setAgentId(agentId);
+        event.setMessage("Ticket #" + ticketId + " assigned to you");
+        kafkaTemplate.send("ticket-assigned", event);
+
+        // Send email notification
+        NotificationRequest notification = new NotificationRequest();
+        notification.setMessage("You’ve been assigned ticket #" + ticketId);
+        notification.setEmail(agent.getEmail());
+        notificationClient.sendEmailNotification(notification);
+
         return mapToTicketResponse(updatedTicket);
     }
+
 
     public List<TicketResponse> getAllTickets() {
         return ticketRepository.findAll().stream()
